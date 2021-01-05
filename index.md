@@ -53,22 +53,22 @@ WoT security goal is that quote: ["devices should not be used in any form of att
 WoST's paradigm is: 'Things Are Not Servers'. WoST requires that after provisioning a Thing MUST NOT act as a server, unless its purpose is to be a server. 
 
 WoST compliant 'Things' MUST adhere to simple but strict rules:
-```
+<code>
 1. Secured Things MUST connect to their provisioned Secured Thing Gateway. The STG will not connect to Secured Things.
 
 2. Secured Things MUST NOT operate a server for the purpose of WoT after they are provisioned. It MUST NOT listen on any ports until it is unprovisioned by a reset.
+   
+   If the main purpose of the Thing is to be a server this functionality remains separate from the Thing functionality. Eg, a server is allowed for other purposes. For example, a web server can be monitored as a Secured Thing.
 
-If the main purpose of the Thing is to be a server this functionality remains separate from the Thing functionality. Eg a server is allowed for other purposes. For example, a web server can be monitored as a Secured Thing.
+1. Secured Things MUST NOT request firewall ports to be opened using UPnP or any other means, including written instructions.
 
-3. Secured Things MUST NOT request firewall ports to be opened using UPnP or any other means, including written instructions.
+2. Secured Things are only allowed to connect to the Internet to accomplish their primary purpose unless explicitly documented and approved by the user. This is more of a privacy issue but important nontheless.
 
-4. Secured Things are only allowed to connect to the Internet to accomplish their primary purpose unless explicitly documented and approved by the user. Things is more of a privacy issue but important nontheless.
+   Secured Thing providers can provide an Internet service that a Thing connects to after the user accepts the terms and MUST clearly identify what data is send to the service and how often.
 
-Secured Thing providers can provide an Internet service that a Thing connects to after the user accepts the terms and MUST clearly identify what data is send to the service and how often.
+   For example, sending usage data from a Thing to an Internet provider is not allowed until the administrator is informed about what data is sent, how often, and gives its consent.
+</code>
 
-For example, sending usage data from a Thing to an Internet provider is not allowed until the administrator is informed about what data is sent, how often, and gives its consent.
-
-```
 The above set of rules reduces the number of servers greatly as only a single Gateway needs to run a server. Thing manufacturers don't have to be as stringent about security, and less memory and CPU are needed as no server is needed.
 
 This raises an obvious question, how to connect to a Thing? A consumer doesn't connect to a Thing, instead a consumer connects to the gateway that a Thing is paired with. A Thing connects to its paired gateway to send and receive messages while the connection is in place.
@@ -85,13 +85,14 @@ The burden of proper security lies with the STG. The gateway can remain secure t
 ## WoST Compliance
 
 In addition to being WoT compliant, WoST compliant Secured Thing Gateways MUST adhere to the following rules:
-```
+<code>
 1. STG's MUST support provisioning of Secured Things and capture the Thing Description (TD). 
 
 2. STG's MUST relay actions from users with sufficient authorization to Secured Things as described in their TD.
 
 3. STG's MUST forward the TD for provisioned things to a [directory service](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory). This is the means for consumers to discover things. 
-The directory service can be provided with the STG or the STG can be configured to forward TD's to an external directory service.
+
+   The directory service can be provided with the STG or the STG can be configured to forward TD's to an external directory service.
 
 4. STG's CAN be configured to push one or more 'Exposed Things' in its directory to another STG acting as an intermediary. For example to push information from Things to a cloud hosted gateway. The receiving STG MUST update the Thing address to itself as it is responsible for routing messages to and from the Thing.
 
@@ -99,8 +100,8 @@ The directory service can be provided with the STG or the STG can be configured 
 
 6. Commercial STG Manufacturers MUST make security patches available for the duration of the support period of the gateway. The security update interval for minor to intermediate vulnerabilities MUST be 6 months or less. After being notified of a severe vulnerability, a security patch MUST be made available within a month of notification. (TODO, adhere to common definitions of minor, intermediate and severe vulnerabilities)
 
-Support for automatic updates of the firmware with security patches from a trusted source is STRONGLY recommended where possible. It MUST have the ability to disable automatic updates and use manual updates. 
-```
+   Support for automatic updates of the firmware with security patches from a trusted source is STRONGLY recommended where possible. It MUST have the ability to disable automatic updates and use manual updates. 
+</code>
 
 ## Secured Thing Gateway Discovery
 
@@ -130,9 +131,7 @@ The STG keeps a list of provisioned Secured Things and their public key. Message
 
 ### TD Registration With Secured Thing Gateway
 
-After provisioning, Secured Things MUST [register](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory-api-registration) their TD with a Secured Thing Gateway using the directory service API. 
-
-The gateway MUST make this TD available through the associated directory service.
+After provisioning, Secured Things MUST [register](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory-api-registration) their TD with a Secured Thing Gateway using the directory service API. The gateway MUST make this TD available through the associated directory service.
 
 
 # References
