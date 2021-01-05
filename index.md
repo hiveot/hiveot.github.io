@@ -88,21 +88,18 @@ In addition to being WoT compliant, WoST compliant Secured Thing Gateways MUST a
 ```
 1. STG's MUST support provisioning of Secured Things and capture the Thing Description (TD). 
 
-2. STG's MUST relay actions and other inputs as described in the TD to provisioned Secured Things.
+2. STG's MUST relay actions from users with sufficient authorization to Secured Things as described in their TD.
 
+3. STG's MUST forward the TD for provisioned things to a [directory service](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory). This is the means for consumers to discover things. 
+The directory service can be provided with the STG or the STG can be configured to forward TD's to an external directory service.
 
+4. STG's CAN be configured to push one or more 'Exposed Things' in its directory to another STG acting as an intermediary. For example to push information from Things to a cloud hosted gateway. The receiving STG MUST update the Thing address to itself as it is responsible for routing messages to and from the Thing.
 
-1. STG's MUST implement [the directory service](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory). This is the means for Things to discovery the Gateway and publish their TD.
+5. STG's MUST have the ability for [post-manufacturing updates of itself, its scripts and its plugins](https://www.w3.org/TR/wot-architecture/#sec-security-consideration-update-provisioning). The authenticity of security updates MUST be verified before they are applied.
 
-2. STG's CAN support extensions such as a web server for consumers.
+6. Commercial STG Manufacturers MUST make security patches available for the duration of the support period of the gateway. The security update interval for minor to intermediate vulnerabilities MUST be 6 months or less. After being notified of a severe vulnerability, a security patch MUST be made available within a month of notification. (TODO, adhere to common definitions of minor, intermediate and severe vulnerabilities)
 
-3. STG's CAN be configured to push one or more 'Exposed Things' in its directory to another STG acting as an intermediary. For example to push information from Things to a cloud hosted gateway. The receiving STG MUST update the Thing address to itself as it is responsible for routing messages to and from the Thing.
-
-4. STG's MUST have the ability for [post-manufacturing updates of itself, script or related data](https://www.w3.org/TR/wot-architecture/#sec-security-consideration-update-provisioning). The authenticity of security patches MUST be verified before they are applied.
-
-5. STG Manufacturers MUST make security patches available for the duration of the support period of the gateway. The security update interval for minor to intermediate vulnerabilities MUST be 6 months or less. After being notified of a severe vulnerability, a security patch MUST be made available within a month of notification. (TODO, adhere to common definitions of minor, intermediate and severe vulnerabilities)
-
-6. Support for automatic updates of the firmware with security patches from a trusted source is STRONGLY recommended where possible. It MUST have the ability to disable automatic updates and use manual updates. 
+Support for automatic updates of the firmware with security patches from a trusted source is STRONGLY recommended where possible. It MUST have the ability to disable automatic updates and use manual updates. 
 ```
 
 ## Secured Thing Gateway Discovery
@@ -118,29 +115,24 @@ Secured Thing discovery works via the Gateway that acts as an intermediary, as a
 
 Secured Things that do not support mDNS but do have a configuration file or utility can be linked to the gateway using the gateway hostname or IP address.
 
-### Hybrid Discovery
-
-A hybrid solution is accepted where the STG discovers a Thing through mDNS and provisions it by connecting to the Thing, as long as the Thing turns off all servers after provisioning is complete. 
-
-The provisioning process will inform the Thing where to connect to, eg a STG or message bus like MQTT. There are currently no message definitions for this approach.
-
 ### Unsecured Things
 
-Things that expect the gateway to discover and connect to it for normal operations are NOT supported by STG, as it is counter to the *Things Are Not Servers* objective of Secured Things.
+Things that expect the gateway to discover and connect to it are NOT supported by STG, as it is counter to the *Things Are Not Servers* paradigm.
 
 
 ## Thing Provisioning With Secured Thing Gateways
 
 Provisioning is the act of setting up a trusted relationship between Secured Thing and Secured Thing Gateway. The process is initiated by a Secured Thing when it is unprovisioned and a gateway is discovered. One of the methods described in the [OCF Security Specification](https://www.w3.org/TR/wot-security/#bib-ocf17) is used. Things with the ability to present a number can use the random pin method to prevent a man in the middle attack during the provisioning process.
 
-Each Secured Thing MUST have a private and public key. A new key set is best generated during the provisioning process. During the provisioning process, the  public keys are exchanged over an encrypted channel using JWE. After provisioning all messages are signed using JWS. The message content can be encrypted using JWE. The preferred encryption method for keys and session is elliptic curve cryptography. 
+Each Secured Thing MUST have a private and public key for signing messages. A new key set is best generated during the provisioning process. During the provisioning process, the  public keys are exchanged over an encrypted channel using JWE. After provisioning all messages are signed using JWS. The message content can be encrypted using JWE. The preferred encryption method for keys and session is elliptic curve cryptography. 
 
 The STG keeps a list of provisioned Secured Things and their public key. Messages from the Thing are only accepted when signed with JWS unless they are provisioned in test mode.
 
-### Registration With Secured Thing Gateway
+### TD Registration With Secured Thing Gateway
 
 After provisioning, Secured Things MUST [register](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory-api-registration) their TD with a Secured Thing Gateway using the directory service API. 
 
+The gateway MUST make this TD available through the associated directory service.
 
 
 # References
