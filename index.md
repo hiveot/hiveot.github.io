@@ -20,15 +20,16 @@ The primary objective of this project is the creation of a secure approach to th
 
 ## Overview
 
-With billions of IoT devices being used, and this number growing fast, the [WoT](https://www.w3.org/TR/?title=web%20of%20things) provides standards to support interoperability between IoT devices and its consumers.
+With billions of IoT devices being used, and this number growing fast, the [WoT](https://www.w3.org/TR/?title=web%20of%20things) provides standards to support interoperability between IoT devices and its consumers. It addresses one of the biggest problems in IoT today.
 
-However, interoperability isn't enough if security isn't sufficiently addressed. The current WoT architecture does allow for Things to act as a server and seems to encourage it. Having billions of servers potentially exposed to the internet is a security nightmare waiting to happen. WoST aims to prevent this from happening. 
+However, without sufficiently high guarantee of security, the work to ensure interoperability is inadequate for building practical applications.
+The current WoT architecture does allow for Things to act as a server and seems to be biased towards it. Implementing a secure server is difficult and requires constant vigilance and software updates to keep up. Having billions of servers potentially exposed to the internet is a security nightmare waiting to happen. Especially considering that most will never see an update after they are shipped. WoST aims to prevent this from becoming a problem. 
 
-The primary objective of WoST is to improve security in WoT by not allowing Things to expose a server, except when its purpose is to be a server. It aims to be WoT compliant except where this objective would be compromised.
+The primary objective of WoST is to improve security in WoT simply by not allowing Things to expose a server, except when its purpose is to be a server. It aims to be WoT compliant except where this objective would be compromised.
 
 It is the hope that 'WoST' compliancy will become a must have for the security minded consumer when purchasing IoT devices.
 
-This approach requires the use of a gateway. This is not considered a major hindrance to adoption as the cost can be offset with the lower cost of a simpler 'Thing' design. Rather than configuring each Thing, a centralized configuration facility on a gateway will further simplify its usage.
+This approach requires the use of a gateway to act on behalf of connected Things. Rather than configuring each Thing, a centralized configuration facility on a gateway will let users manage the configuration. The gateway approach is already quite common for existing IoT devices such as ZWave and Zigbee and does not seem to be a hindrance to adoption.
 
 ## The Problem With WoT's Reference Implementation
 
@@ -40,15 +41,15 @@ What are the chances of IoT device manufacturers to provide this level of securi
 
 Okay you might say, but what about putting all these devices behind a firewall and use a gateway or 'intermediary' to connect to the Internet? This is certainly possible but no-where in the spec it says that 'Things' should not be connected to the Internet. In fact, the architecture document shows several use-cases [4] where a remote controller connects to a 'Thing' via the Internet. While the WoT architecture specification is agnostic of how this connection takes place, the reference implementation interprets this as opening a listening port on a Thing.
 
-A related issue is that the LAN is not a safe place. A cross scripting attack can let a web site run a script on your browser that connects to your Thing unless the 'thing' is well protected against such attacks. Javascript running in your browser is already on the LAN and has already bypassed the firewall. The script can scan for devices on your LAN and potentially connect to them[5]. Imagine visiting a web site and suddenly your 'smart door lock' thing is controlled by someone else... Viruses are well known for compromising PC's and can perform attacks on LAN based Things without browser restrictions.
+A related issue is that the LAN is not a safe place. A cross scripting attack can let a web site run a script on your browser that connects to your Thing unless the 'thing' is well protected against such attacks. Javascript running in your browser is already on the LAN and has already bypassed the firewall. The script can scan for devices on your LAN and potentially connect to them[5]. Imagine visiting a web site and suddenly your 'smart door lock' thing is controlled by someone else... In addition, viruses are well known for compromising PC's and can perform attacks on LAN based Things without browser restrictions.
 
 As if these aren't enough risks, a lot of so-called smart devices today use UPnP or some tunneling solution to tell their router to expose them to the Internet[6] so it seems common practice to do so. Various manuals explain how to turn on UPnP to control devices remotely [7]. Oh the irony.
 
-The fact is that the moment you allow internet access to a 'Thing', the lowest cost convenience factor wins and you have lost control of the situation. Warnings of the state of things make the news regularly but there is little heed paid to these warnings. Many manufacturers, including the WoT working group still see nothing wrong with running servers on IoT devices.
+The fact is that the moment you allow internet access to a 'Thing', the lowest cost convenience factor wins and you have lost control of the situation. Warnings that the situation is dire make the news regularly but there is little heed paid to these warnings. Many manufacturers, including the WoT working group still see nothing wrong with running servers on IoT devices.
 
-WoT security goal is that quote: ["devices should not be used in any form of attack"](https://www.w3.org/TR/wot-security/#wot-threat-model). However the architecture itself stays silent on how to achieve this class of security risks. One can argue that instead it should provide guidance and bare responsibility to implementations of said architecture.
+WoT security goal is that quote: ["devices should not be used in any form of attack"](https://www.w3.org/TR/wot-security/#wot-threat-model). However the architecture itself stays silent on how to achieve this class of security risks. One can argue that instead it should provide guidance and bear responsibility to implementations of said architecture.
 
-## The Improved Security Approach In WOST
+## The Security First Approach In WOST
 
 WoST's paradigm is: 'Things Are Not Servers'. WoST requires that after provisioning a Thing MUST NOT act as a server, unless its purpose is to be a server. 
 
@@ -56,45 +57,45 @@ WoST compliant 'Things' MUST adhere to simple but strict rules:
 <code>
 1. Secured Things MUST connect to their provisioned Secured Thing Gateway. The STG will not connect to Secured Things.
 
-2. Secured Things MUST NOT operate a server for the purpose of WoT after they are provisioned. It MUST NOT listen on any ports until it is unprovisioned by a reset.
+2. Secured Things MUST NOT operate a server for the purpose of WoT after they are provisioned. It MUST NOT listen on any ports until it is unprovisioned by a factory reset.
    
    If the main purpose of the Thing is to be a server this functionality remains separate from the Thing functionality. Eg, a server is allowed for other purposes. For example, a web server can be monitored as a Secured Thing.
 
-1. Secured Things MUST NOT request firewall ports to be opened using UPnP or any other means, including written instructions.
+3. Secured Things MUST NOT request firewall ports to be opened using UPnP or any other means, including written instructions.
 
-2. Secured Things are only allowed to connect to the Internet to accomplish their primary purpose unless explicitly documented and approved by the user. This is more of a privacy issue but important nontheless.
+4. Secured Things are only allowed to connect to the Internet to accomplish their primary purpose unless explicitly documented and approved by the user. This is more of a privacy issue but important nontheless.
 
    Secured Thing providers can provide an Internet service that a Thing connects to after the user accepts the terms and MUST clearly identify what data is send to the service and how often.
 
    For example, sending usage data from a Thing to an Internet provider is not allowed until the administrator is informed about what data is sent, how often, and gives its consent.
 </code>
 
-The above set of rules reduces the number of servers greatly as only a single Gateway needs to run a server. Thing manufacturers don't have to be as stringent about security, and less memory and CPU are needed as no server is needed.
+The above set of rules reduces the number of servers greatly as only Gateways run a server. Thing manufacturers don't have to be as stringent about security, and less memory and CPU are needed on Things as no server is needed. Simpler and cheaper, what is not to like.
 
-This raises an obvious question, how to connect to a Thing? A consumer doesn't connect to a Thing, instead a consumer connects to the gateway that a Thing is paired with. A Thing connects to its paired gateway to send and receive messages while the connection is in place.
+This raises an obvious question, how to connect to a Thing? The answer is that a consumer does not connect to a Thing. Instead, a consumer connects to the gateway that a Thing is provisioned (paired) with. A Thing connects to its provisioned gateway to send and receive messages while the connection is in place.
 
-A Gateway supports REST compatible connection protocols as defined in their protocol binding (see WoT on protocol bindings). A Thing that implements one of these protocols will be able to connect to a gateway.
+A Gateway supports HTTP and sub protocols like WebSockets as defined in their protocol binding (see WoT on profiles and protocol bindings). A Thing that implements one of these protocols will be able to connect to a gateway which serves the Thing Description and relays actions and events.
 
 
 ## Secured Thing Gateway (STG) 
 
-The primary purpose of a 'Secured Thing Gateway' (STG) is to act as an intermediary for Secured Things. The STG supports provisioning of Things and can connect to cloud based STG intermediaries. It can be extended with plugins to act as a gateway for 3rd party IoT devices such as ZWave and one-wire, and for services such as a mDNS discovery, directory service and web server for user interaction. 
+The primary purpose of a 'Secured Thing Gateway' (STG) is to act as an intermediary for Secured Things. The STG supports provisioning of Things, serves Thing TD's and relays actions and events that are defined in the TD. In addition a gateway can relay messages to cloud based STG intermediaries so that no direct LAN access is needed to view and control Secured Things from the Internet.
 
-The burden of proper security lies with the STG. The gateway can remain secure through regular security patches similar to Windows, Android or iPhone. While the risk doesn't disappear it is much more managable than requiring this on every Thing itself.
+STG's can be extended with plugins to also act as a gateway for 3rd party IoT devices such as ZWave and one-wire, and for services such as a mDNS discovery, directory service and web server for user interaction. 
+
+The burden of proper security lies with the STG. Gateway providers must be committed to ensure their gateways are up to date with security patches, similar to Windows, Android devices or iPhones. While the risk doesn't disappear it is much more managable than requiring this for every single Thing itself.
 
 ## WoST Compliance
 
 In addition to being WoT compliant, WoST compliant Secured Thing Gateways MUST adhere to the following rules:
 <code>
-1. STG's MUST support provisioning of Secured Things and capture the Thing Description (TD). 
+1. STG's MUST support provisioning of Secured Things.
 
-2. STG's MUST relay actions from users with sufficient authorization to Secured Things as described in their TD.
+2. STG's MUST implement a [directory service](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory) that serves discovery of Secured Thing TDs. The STG MUST update the Thing address to itself as it is responsible for routing messages to and from the Thing.
 
-3. STG's MUST forward the TD for provisioned things to a [directory service](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory). This is the means for consumers to discover things. 
+3. STG's MUST relay actions and events between Things and their consumers as described in their TD.
 
-   The directory service can be provided with the STG or the STG can be configured to forward TD's to an external directory service.
-
-4. STG's CAN be configured to push one or more 'Exposed Things' in its directory to another STG acting as an intermediary. For example to push information from Things to a cloud hosted gateway. The receiving STG MUST update the Thing address to itself as it is responsible for routing messages to and from the Thing.
+4. STG's CAN be configured to act as an intermediary and push selected Exposed Things to another STG or intermediary. 
 
 5. STG's MUST have the ability for [post-manufacturing updates of itself, its scripts and its plugins](https://www.w3.org/TR/wot-architecture/#sec-security-consideration-update-provisioning). The authenticity of security updates MUST be verified before they are applied.
 
@@ -110,11 +111,11 @@ A Secured Thing Gateway MAY implement a [DNS-Based Service Discovery](https://ww
 
 The service name of the STG follows the WoT Service Discovery naming. Tenatively "_directory._sub._wot". The type in the TXT record of the service instance is "Directory".
 
-Secured Thing discovery works via the Gateway that acts as an intermediary, as a Directory Service or both.
+Secured Thing discovery works via the Secured Gateway that provides the WoT Directory Service.
 
 ### Manual Discovery
 
-Secured Things that do not support mDNS but do have a configuration file or utility can be linked to the gateway using the gateway hostname or IP address.
+Secured Things that do not support mDNS but do have a configuration file or utility, can be linked to the gateway using the Secured Gateway hostname or IP address.
 
 ### Unsecured Things
 
