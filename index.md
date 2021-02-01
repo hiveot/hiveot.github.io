@@ -1,4 +1,4 @@
-# WoST Zone - Web Of Secured Things - DRAFT
+# WoST Zone - Web Of Wost Things - DRAFT
 
 WoST is a language agnostic implementation of Web Of Things (WOT) with a focus on security, based on the 'Things Are NOT Servers' paradigm.
 
@@ -9,9 +9,14 @@ It aims to be WoT compliant while providing restrictions to establish a secured 
 This project is currently in the definition phase. 
 
 Planned project deliverables, subject to change no doubt:
-1. Conceptual design [in progress]
-2. Secured Thing Gateway pipeline core
-3. Core pipeline plugins
+1. Conceptual design and attempt to engage with the WoT working group [done]
+2. WoST Gateway core and client libraries [in progress]
+3. WoST Gateway Plugin for WoST Thing provisioning and registration
+4. WoST Gateway Plugin for Directory Service
+5. WoST Gateway Plugin for managing Things through a Web UI
+6. WoST Gateway Plugin for legacy IoT devices
+7. WoST Gateway Plugin for cloud intermediary
+
 
 
 ## Objectives
@@ -61,17 +66,17 @@ WoST's paradigm is: 'Things Are Not Servers'. WoST requires that after provision
 
 WoST compliant 'Things' MUST adhere to simple but strict rules:
 <code>
-1. Secured Things MUST connect to their provisioned Secured Thing Gateway. The STG will not connect to Things.
+1. Wost Things MUST connect to their provisioned Wost Thing Gateway. The STG will not connect to Things.
 
-2. Secured Things MUST NOT operate a server for the purpose of WoT after they are provisioned. It MUST NOT listen on any ports until it is unprovisioned by a factory reset.
+2. Wost Things MUST NOT operate a server for the purpose of WoT after they are provisioned. It MUST NOT listen on any ports until it is unprovisioned by a factory reset.
    
-   If the main purpose of the Thing is to be a server this functionality remains separate from the Thing functionality. Eg, a server is allowed for other purposes. For example, a web server can be monitored as a Secured Thing.
+   If the main purpose of the Thing is to be a server this functionality remains separate from the Thing functionality. Eg, a server is allowed for other purposes. For example, a web server can be monitored as a Wost Thing.
 
-3. Secured Things MUST NOT request firewall ports to be opened using UPnP or any other means, including written instructions.
+3. Wost Things MUST NOT request firewall ports to be opened using UPnP or any other means, including written instructions.
 
-4. Secured Things are only allowed to connect to the Internet to accomplish their primary purpose unless explicitly documented and approved by the user. This is more of a privacy issue but important nontheless.
+4. Wost Things are only allowed to connect to the Internet to accomplish their primary purpose unless explicitly documented and approved by the user. This is more of a privacy issue but important nontheless.
 
-   Secured Thing providers can provide an Internet service that a Thing connects to after the user accepts the terms and MUST clearly identify what data is send to the service and how often.
+   Wost Thing providers can provide an Internet service that a Thing connects to after the user accepts the terms and MUST clearly identify what data is send to the service and how often.
 
    For example, sending usage data from a Thing to an Internet provider is not allowed until the administrator is informed about what data is sent, how often, and gives its consent.
 </code>
@@ -83,9 +88,9 @@ This raises an obvious question, how to connect to a Thing? The answer is that a
 A Gateway supports HTTP and sub protocols like WebSockets as defined in their protocol binding (see WoT on profiles and protocol bindings). A Thing that implements one of these protocols will be able to connect to a gateway which serves the Thing Description and relays actions and events.
 
 
-## Secured Thing Gateway (STG) 
+## Wost Thing Gateway (STG) 
 
-The primary purpose of a 'Secured Thing Gateway' (STG) is to act as an intermediary for Secured Things. The STG supports provisioning of Things, serves Thing TD's and relays actions and events that are defined in the TD. In addition a gateway can relay messages to cloud based STG intermediaries so that no direct LAN access is needed to view and control Secured Things from the Internet.
+The primary purpose of a 'Wost Thing Gateway' (STG) is to act as an intermediary for Wost Things. The STG supports provisioning of Things, serves Thing TD's and relays actions and events that are defined in the TD. In addition a gateway can relay messages to cloud based STG intermediaries so that no direct LAN access is needed to view and control Wost Things from the Internet.
 
 STG's can be extended with plugins to also act as a gateway for 3rd party IoT devices such as ZWave and one-wire, and for services such as a mDNS discovery, directory service and web server for user interaction. 
 
@@ -93,7 +98,7 @@ The burden of proper security lies therefore with the STG. Gateway providers mus
 
 ## WoST Compliance
 
-In addition to being WoT compliant, WoST compliant Secured Thing Gateways MUST adhere to the following rules:
+In addition to being WoT compliant, WoST compliant Wost Thing Gateways MUST adhere to the following rules:
 <code>
 1. STG's MUST support provisioning of WoST Things.
 
@@ -105,7 +110,7 @@ In addition to being WoT compliant, WoST compliant Secured Thing Gateways MUST a
 
    Support for automatic updates of the firmware with security patches from a trusted source is STRONGLY recommended where possible. It MUST have the ability to disable automatic updates and use manual updates. 
 
-5. STG's CAN implement a [directory service](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory) that serves discovery of Secured Thing TDs. The STG MUST update the Thing address to itself as it is responsible for routing messages to and from the Thing. If the STG does not implement a directory service it MUST provide the means to update an external directory service.
+5. STG's CAN implement a [directory service](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory) that serves discovery of Wost Thing TDs. The STG MUST update the Thing address to itself as it is responsible for routing messages to and from the Thing. If the STG does not implement a directory service it MUST provide the means to update an external directory service.
 
 6. STG's CAN be configured to act as an intermediary and push selected Exposed Things to another STG or intermediary. 
 
@@ -116,7 +121,7 @@ In addition to being WoT compliant, WoST compliant Secured Thing Gateways MUST a
 WoST Gateways can be discovered by WoST Things and consumers manuall or through mDNS.
 
 ### mDNS 
-A Secured Thing Gateway MAY implement a [DNS-Based Service Discovery](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#introduction-dns-sd). Things and Thing consumers can use this to discover the gateway on a local network. 
+A Wost Thing Gateway MAY implement a [DNS-Based Service Discovery](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#introduction-dns-sd). Things and Thing consumers can use this to discover the gateway on a local network. 
 
 The service name of the STG follows the WoT Service Discovery naming. Tenatively "_directory._sub._wot". The type in the TXT record of the service instance is "Directory".
 
@@ -126,20 +131,20 @@ WoST Thing discovery works via the WoST Gateway that provides the information to
 
 WoST Things that do not support mDNS but do have a configuration file or utility, can be linked to the gateway using the WoST Gateway hostname or IP address.
 
-### Unsecured Things
+### UnWost Things
 
 Things that expect the gateway to discover and connect to it can be supported through a plugin for legacy devices, similar to 3rd party protocols such as zwave and onewire controllers. 
 
 
 ## WoST Thing Provisioning
 
-Provisioning is the act of setting up a trusted relationship between WoST Thing and WoST Gateway. The process is initiated by a Secured Thing when it is unprovisioned and a gateway is discovered. One of the methods described in the [OCF Security Specification](https://www.w3.org/TR/wot-security/#bib-ocf17) is used. Things with the ability to present a number can use the random pin method to prevent a man in the middle attack during the provisioning process.
+Provisioning is the act of setting up a trusted relationship between WoST Thing and WoST Gateway. The process is initiated by a Wost Thing when it is unprovisioned and a gateway is discovered. One of the methods described in the [OCF Security Specification](https://www.w3.org/TR/wot-security/#bib-ocf17) is used. Things with the ability to present a number can use the random pin method to prevent a man in the middle attack during the provisioning process.
 
 Each WoST Thing MUST have a private and public key for signing messages. A new key set is best generated during the provisioning process. During the provisioning process, the  public keys are exchanged over an encrypted channel using JWE. After provisioning all messages are signed using JWS. The message content can be encrypted using JWE. The preferred encryption method for keys and session is elliptic curve cryptography. 
 
 The WoST Gateway keeps a list of provisioned Things and their public key. Messages from the Thing are only accepted when signed with JWS (unless they are provisioned in test mode).
 
-### Thing Description Registration With Secured Thing Gateway
+### Thing Description Registration With Wost Thing Gateway
 
 After provisioning, WoST Things MUST register their TD with the WoST Gateway. The WoST Gateway MUST make this TD available through the associated directory service using the [directory service API](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory-api-registration) [9].
 
