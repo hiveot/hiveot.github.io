@@ -10,12 +10,12 @@ This project is currently in the definition phase.
 
 Planned project deliverables, subject to change no doubt:
 1. Conceptual design and attempt to engage with the WoT working group [done]
-2. WoST Gateway core and client libraries [in progress]
-3. WoST Gateway Plugin for WoST Thing provisioning and registration
-4. WoST Gateway Plugin for Directory Service
-5. WoST Gateway Plugin for managing Things through a Web UI
-6. WoST Gateway Plugin for legacy IoT devices
-7. WoST Gateway Plugin for cloud intermediary
+2. WoST Hub core and client libraries [in progress]
+3. WoST Hub Plugin for WoST Thing provisioning and registration [in progress]
+4. WoST Hub Plugin for Directory Service
+5. WoST Hub Plugin for managing Things through a Web UI
+6. WoST Hub Plugin for legacy IoT devices
+7. WoST Hub Plugin for cloud intermediary
 
 
 
@@ -29,13 +29,13 @@ WoST improves security in WoT simply by not allowing Things to expose a server, 
 
 It is the intent that 'WoST' compliancy will become a must have for the security minded consumer when purchasing IoT devices.
 
-This approach requires the use of a gateway to act on behalf of WoST Things. Rather than configuring each Thing, the configuration facility on the gateway will let users manage the configuration. The gateway approach is already quite common for existing IoT devices such as ZWave and Zigbee and does not seem to be a hindrance to adoption.
+This approach requires the use of a hub to act on behalf of WoST Things. Rather than configuring each Thing, the configuration facility on the hub will let users manage the configuration. This hub-and-spokes approach is already quite common for existing IoT devices such as ZWave and Zigbee and does not seem to be a hindrance to adoption.
 
 ![](wost-overview.png)
 
-In the above diagram WoST Things and consumers connect to the gateway which acts as a proxy for all Things. Data can flow back to the connecting devices. Gateway plugins convert access to legacy devices as if they are  WoST Things.
+In the above diagram WoST Things and consumers connect to the hub which acts as a proxy for all Things. Data can flow back to the connecting devices. Hub plugins convert access to legacy devices as if they are  WoST Things.
 
-All application interaction with WoST Things and legacy devices take place via the gateway. Access over the internet is provided via a cloud intermediary, which can be another WoST gateway run by a cloud service provider. 
+All application interaction with WoST Things and legacy devices take place via the hub. Access over the internet is provided via a cloud intermediary, which can be another WoST hub run by a cloud service provider. 
 
 
 ## The Problem With WoT's Reference Implementation
@@ -44,7 +44,7 @@ With billions of IoT devices being used, and this number growing fast, the [WoT]
 
 However, there is an even bigger problem which is that of security of IoT devices.
 
-WoT's [reference implementation](https://github.com/WebThingsIO) implements a 'Thing' as a client and as a server. The problem is with running a server on every 'Thing'.
+WoT's [reference implementation](https://github.com/eclipse/thingweb.node-wot) implements a 'Thing' as a client and as a server. The problem is with running a server on every 'Thing'.
 
 A web server is a security risk, no matter how well written. If all 'WoT Things' implement a web server, the number of web servers would run in the many billions. Each server can potentially be hacked or used in denial of service attacks. Hardening a server for exposure to the Internet is difficult and requires constant vigilance and regular security patches. It is irresponsible to expose a server to the Internet without it. 
 
@@ -56,17 +56,17 @@ A related issue is that the LAN is not a safe place. A cross scripting attack ca
 
 As if these aren't enough risks, a lot of so-called smart devices today use UPnP or some tunneling solution to tell the Internet router to expose them to the Internet[6] so it seems common practice to do so. Various manuals explain how to turn on UPnP to control devices remotely [7]. 
 
-The fact is that the moment you allow Internet access to a 'Thing', the convenience (for the manufacturer) factor wins and you have lost control of the situation. Warnings that the situation is dire make the news regularly but there is little heed paid to these warnings. Many manufacturers, including the WoT working group still see nothing wrong with running servers on IoT devices.
+The fact is that the moment you allow Internet access to a 'Thing', the convenience factor wins and you have lost control of the situation. Warnings that the situation is dire make the news regularly but there is little heed paid to these warnings. Many manufacturers, including (apparently) the WoT working group still see nothing wrong with running servers on IoT devices or do not actively work to discourage this as a viable option.
 
 WoT security goal is that quote: ["devices should not be used in any form of attack"](https://www.w3.org/TR/wot-security/#wot-threat-model). However the architecture itself stays silent on how to achieve this. WoST argues that the WoT  should provide clear guidance in its architecture on securing Things so they can not be used in any form of attack, and bear responsibility for security vulnerabilities of said architecture. The challenge will be to appease its many masters when adding constraints to the architecture to elimitate security risks.
 
 ## The Security First Approach In WOST
 
-WoST's paradigm is: 'Things Are Not Servers'. WoST requires that after provisioning a Thing MUST NOT act as a server, unless its purpose is to be a server. 
+WoST's paradigm is: 'Things Are Not Servers'. Securing servers is too difficult to expect all Thing manufacturers to do so dilligently. WoST requires that after provisioning a Thing MUST NOT act as a server, unless its purpose is to be a server. Note that this leaves the door open to run an insecure server just to provision the Thing.
 
 WoST compliant 'Things' MUST adhere to simple but strict rules:
 <code>
-1. WoST Things MUST connect to their provisioned WoST Gateway. The STG will not connect to Things.
+1. WoST Things MUST connect to their provisioned WoST Hub. The Hub will not connect to WoST Things.
 
 2. WoST Things MUST NOT operate a server for the purpose of WoT after they are provisioned. It MUST NOT listen on any ports until it is unprovisioned by a factory reset.
    
@@ -85,65 +85,62 @@ WoST compliant 'Things' MUST adhere to simple but strict rules:
    For example, sending usage data from a Thing to an Internet provider is not allowed until the administrator is informed about what data is sent, how often, and gives its consent.
 </code>
 
-The above set of rules reduces the number of servers greatly as only WoST Gateways run a server. At the same time it improves privacy. WoST Thing manufacturers benefit as they don't have to be as stringent about security, and less memory and CPU are needed on Things as no server is needed. Simpler and cheaper, what is not to like.
+The above set of rules reduces the number of servers greatly as only WoST Hubs run a server. At the same time it improves privacy. WoST Thing manufacturers benefit as they don't have to be as stringent about security, and less memory and CPU are needed on Things as no server is needed. Simpler and cheaper, what is not to like.
 
-This raises an obvious question, how to connect to a Thing? The answer is that a consumer does not connect to a Thing. Instead, a consumer connects to the WoST Gateway that a Thing is provisioned (paired) with. A Thing connects to its provisioned gateway to send and receive messages while the connection is in place.
+This raises an obvious question, how to connect to a Thing? The answer is that a consumer does not connect to a Thing. Instead, a consumer connects to the WoST Hub that a Thing is provisioned (paired) with. A Thing connects to its provisioned hub to send and receive messages while the connection is in place.
 
-## WoST Gateway (WSTG) 
+## WoST Hub
 
-The primary purpose of a 'WoST Gateway' (WSTG) is to act as an intermediary for WoST Things. The WSTG supports provisioning of Things, serves Thing TD's and relays actions and events that are defined in the TD. In addition a gateway can relay messages to cloud based WSTG intermediaries so that no direct LAN access is needed to view and control WoST Things from the Internet.
+The primary purpose of a 'WoST Hub', or simply 'Hub', is to act as an intermediary for WoST Things. The Hub supports provisioning of Things, serves Thing TD's and relays actions and events that are defined in the TD. In addition the Hub can relay messages to cloud based intermediaries so that no direct LAN access is needed to view and control WoST Things from the Internet.
 
-WSTG's can be extended with plugins to also act as a gateway for 3rd party IoT devices such as ZWave and one-wire, and for services such as a mDNS discovery, directory service and web server for user interaction. 
+Hubs can be extended with plugins to also act as a hub for 3rd party IoT devices such as ZWave and one-wire, and for services such as a mDNS discovery, directory service and web server for user interaction. 
 
-The burden of proper security lies therefore with the WSTG. Gateway providers must be committed to ensure their gateways are up to date with security patches, similar to Windows, Android devices or iPhones. While the risk doesn't disappear it is much more managable than requiring this for every single Thing itself.
+The burden of proper security lies therefore with the Hub. Hub providers must be committed to ensure their hubs are up to date with security patches, similar to Windows, Android devices or iPhones. While the risk doesn't disappear it is much more managable than requiring this for every single Thing itself.
 
 ## WoST Compliance
 
-In addition to being WoT compliant, WoST compliant Gateways MUST adhere to the following rules:
+In addition to being WoT compliant, WoST compliant Hubs MUST adhere to the following rules:
 <code>
-1. WSTG's MUST support provisioning of WoST Things. Rather obvious, but it is required.
+1. WoST Hubs MUST support provisioning of WoST Things. Rather obvious, but it is required.
 
-2. WSTG's MUST relay events and actions between Things and their consumers as described in the TD.
+2. WoST Hubs MUST relay events and actions between Things and their consumers as described in the TD.
 
-3. WSTG's MUST have the ability for [post-manufacturing updates of itself, its scripts and its plugins](https://www.w3.org/TR/wot-architecture/#sec-security-consideration-update-provisioning). The authenticity of security updates MUST be verified before they are applied.
+3. WoST Hubs MUST have the ability for [post-manufacturing updates of itself, its scripts and its plugins](https://www.w3.org/TR/wot-architecture/#sec-security-consideration-update-provisioning). The authenticity of security updates MUST be verified before they are applied.
 
-4. Commercial WSTG Manufacturers MUST make security patches available for the duration of the support period of the gateway. The security update interval for minor to intermediate vulnerabilities MUST be 6 months or less. After being notified of a severe vulnerability, a security patch MUST be made available within one month of notification. (TODO, adhere to common definitions of minor, intermediate and severe vulnerabilities)
+4. Commercial Hub Manufacturers MUST make security patches available for the duration of the support period of the Hub. The security update interval for minor to intermediate vulnerabilities MUST be 6 months or less. After being notified of a severe vulnerability, a security patch MUST be made available within one month of notification. (TODO, adhere to common definitions of minor, intermediate and severe vulnerabilities)
 
    Support for automatic updates of the firmware with security patches from a trusted source is STRONGLY recommended where possible. It MUST have the ability to disable automatic updates and use manual updates. 
 
-5. WSTG's CAN implement a [directory service](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory) that serves discovery of WoST Thing TDs. The WSTG MUST update the Thing address to itself as it is responsible for routing messages to and from the Thing. If the STG does not implement a directory service it MUST provide the means to update an external directory service.
+5. WoST Hubs CAN implement a [directory service](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory) that serves discovery of WoST Thing TDs. The WSTG MUST update the Thing address to itself as it is responsible for routing messages to and from the Thing. If the STG does not implement a directory service it MUST provide the means to update an external directory service.
 
-6. WSTG's CAN be configured to act as an intermediary and push selected Exposed Things to another STG or intermediary. 
+6. WoST Hubs CAN be configured to act as an intermediary and push selected Exposed Things to another Hub or intermediary. 
 
 </code>
 
-## WoST Gateway Discovery
+## WoST Hub Discovery
 
-WoST Gateways can be discovered by WoST Things and consumers manuall or through mDNS.
+WoST Hubs can be discovered by WoST Things and consumers manuall or through mDNS.
 
 ### mDNS 
-A WoST Gateway MAY implement a [DNS-Based Service Discovery](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#introduction-dns-sd). Things and Thing consumers can use this to discover the gateway on a local network. 
+A WoST Hub MAY implement a [DNS-Based Service Discovery](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#introduction-dns-sd). Things and Thing consumers can use this to discover the hub on a local network. 
 
-The service name of the WSTG follows the WoT Service Discovery naming. Tenatively "_directory._sub._wot". The type in the TXT record of the service instance is "Directory".
+The service name of the WoST Hub follows the WoT Service Discovery naming. Tenatively "_directory._sub._wot". The type in the TXT record of the service instance is "Directory".
 
-WoST Thing discovery works via the WoST Gateway that provides the information to a WoT Directory Service.
+WoST Thing discovery works via the WoST Hub that provides the information to a WoT Directory Service.
 
 ### Manual Discovery
 
-WoST Things that do not support mDNS but do have a configuration file or utility, can be linked to the gateway using the WoST Gateway hostname or IP address.
+WoST Things that do not support mDNS but do have a configuration file or utility, can be linked to the hub using the WoST Hub hostname or IP address.
 
 
 ## WoST Thing Provisioning
 
-Provisioning is the act of setting up a trusted relationship between WoST Thing and WoST Gateway. The process is initiated by a WoST Thing when it is unprovisioned and a gateway is discovered. One of the methods described in the [OCF Security Specification](https://www.w3.org/TR/wot-security/#bib-ocf17) is used. Things with the ability to present a number can use the random pin method to prevent a man in the middle attack during the provisioning process.
+Provisioning is the act of setting up a trusted relationship between the device that hosts the WoST Thing and the WoST Hub. The process is initiated by a WoST Thing device when it is unprovisioned and a hub is discovered. One of the methods described in the [OCF Security Specification](https://www.w3.org/TR/wot-security/#bib-ocf17) is used. Things with the ability to present a number can use the random pin method to prevent a man in the middle attack during the provisioning process.
 
 Each WoST Thing MUST have a private and public key for signing messages. A new key set is best generated during the provisioning process. During the provisioning process, the  public keys are exchanged over an encrypted channel using JWE. After provisioning all messages are signed using JWS. The message content can be encrypted using JWE. The preferred encryption method for keys and session is elliptic curve cryptography. 
 
-The WoST Gateway keeps a list of provisioned Things and their public key. Messages from the Thing are only accepted when signed with JWS (unless they are provisioned in test mode).
+The WoST Hub keeps a list of provisioned Things and their public key. Messages from the Thing are only accepted when signed with JWS (unless they are provisioned in test mode).
 
-### Thing Description Registration With WoST Gateway
-
-After provisioning, WoST Things MUST register their TD with the WoST Gateway. The WoST Gateway MUST make this TD available through the associated directory service using the [directory service API](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory-api-registration) [9].
 
 
 # References
