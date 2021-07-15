@@ -6,15 +6,17 @@ It aims to be WoT compliant while providing restrictions to establish a secured 
 
 ## Status & Roadmap
 
-This project is currently in the definition phase. 
+This project is currently in the proof of concept phase. 
 
 Planned project deliverables, subject to change no doubt:
-1. Conceptual design and attempt to engage with the WoT working group [done]
-2. WoST Hub core and client libraries [in progress]
-3. WoST Hub Plugin for WoST Thing provisioning and registration [in progress]
-4. WoST Hub Plugin for Directory Service
-5. WoST Hub Plugin for managing Things through a Web UI
-6. WoST Hub Plugin for legacy IoT devices
+1. Conceptual design and attempt to engage with the WoT working group [poc]
+2. WoST Hub core [alpha]
+2. WoST client library [alpha]
+3. WoST Hub core plugin for Thing provisioning (idprov) [alpha]
+4. WoST Hub core plugin for authorization [alpha]
+4. WoST Hub Plugin for viewing and managing Things through a Web UI
+5. WoST Hub Plugin for legacy IoT devices; 1-wire, Insteon, Z-Wave [in-progress]
+6. WoST Hub Plugin for Directory Service
 7. WoST Hub Plugin for cloud intermediary
 
 
@@ -38,13 +40,13 @@ In the above diagram WoST Things and consumers connect to the hub which acts as 
 All application interaction with WoST Things and legacy devices take place via the hub. Access over the internet is provided via a cloud intermediary, which can be another WoST hub run by a cloud service provider. 
 
 
-## The Problem With WoT's Reference Implementation
+## A Server On Every Device
 
 With billions of IoT devices being used, and this number growing fast, the [WoT](https://www.w3.org/TR/?title=web%20of%20things) provides standards to support interoperability between IoT devices and its consumers. It addresses one of the biggest problems in IoT today.
 
 However, there is an even bigger problem which is that of security of IoT devices.
 
-WoT's [reference implementation](https://github.com/eclipse/thingweb.node-wot) implements a 'Thing' as a client and as a server. The problem is with running a server on every 'Thing'.
+WoT's [reference implementation](https://github.com/eclipse/thingweb.node-wot) implements a 'Thing' as a client and as a server. The problem is with running a server on every 'Thing'. This problem is commonplace and applies to the majority of devices.
 
 A web server is a security risk, no matter how well written. If all 'WoT Things' implement a web server, the number of web servers would run in the many billions. Each server can potentially be hacked or used in denial of service attacks. Hardening a server for exposure to the Internet is difficult and requires constant vigilance and regular security patches. It is irresponsible to expose a server to the Internet without it. 
 
@@ -111,35 +113,37 @@ In addition to being WoT compliant, WoST compliant Hubs MUST adhere to the follo
 
    Support for automatic updates of the firmware with security patches from a trusted source is STRONGLY recommended where possible. It MUST have the ability to disable automatic updates and use manual updates. 
 
-5. WoST Hubs CAN implement a [directory service](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory) that serves discovery of WoST Thing TDs. The WSTG MUST update the Thing address to itself as it is responsible for routing messages to and from the Thing. If the STG does not implement a directory service it MUST provide the means to update an external directory service.
+5. WoST Hubs CAN implement a provisioning service that provisions the Thing device with discovery of WoST Hub endpoints. DNS-SD can be used for discovery of the provisioning server.
 
 6. WoST Hubs CAN be configured to act as an intermediary and push selected Exposed Things to another Hub or intermediary. 
 
 </code>
 
-## WoST Hub Discovery
+## WoST Hub Discovery and Provisioning
 
-WoST Hubs can be discovered by WoST Things and consumers manuall or through mDNS.
+Discovery is a pre-curser to the provisioning step. WoST Hubs can be discovered by WoST Things and consumers manuall or through mDNS.
 
-### mDNS 
+The provisioning server publishes a DNS-SD based discovery record for discovery on the local network. The provisioning server provides a directory of services that are available.
+
+### DNS-SD
 A WoST Hub MAY implement a [DNS-Based Service Discovery](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#introduction-dns-sd). Things and Thing consumers can use this to discover the hub on a local network. 
 
-The service name of the WoST Hub follows the WoT Service Discovery naming. Tenatively "_directory._sub._wot". The type in the TXT record of the service instance is "Directory".
-
-WoST Thing discovery works via the WoST Hub that provides the information to a WoT Directory Service.
+The provisioning service name of the WoST Hub follows the WoT Service Discovery naming. Tenatively "_idprov._tcp" with a TXT record containing the directory path. The default TXT record is: "path=/idprov/directory".
 
 ### Manual Discovery
 
 WoST Things that do not support mDNS but do have a configuration file or utility, can be linked to the hub using the WoST Hub hostname or IP address.
 
 
-## WoST Thing Provisioning
+### Thing Provisioning
 
-Provisioning is the act of setting up a trusted relationship between the device that hosts the WoST Thing and the WoST Hub. The process is initiated by a WoST Thing device when it is unprovisioned and a hub is discovered. One of the methods described in the [OCF Security Specification](https://www.w3.org/TR/wot-security/#bib-ocf17) is used. Things with the ability to present a number can use the random pin method to prevent a man in the middle attack during the provisioning process.
+Provisioning is the process of setting up a trusted relationship between the device that hosts the Thing and the WoST Hub. The process is initiated by a Thing device when it is unprovisioned and a hub is discovered. One of the methods described in the [OCF Security Specification](https://www.w3.org/TR/wot-security/#bib-ocf17) is used. Things with the ability to present an out of band secret can be provisioned securely without a leap of faith in the provisioning process.
 
-Each WoST Thing MUST have a private and public key for signing messages. A new key set is best generated during the provisioning process. During the provisioning process, the  public keys are exchanged over an encrypted channel using JWE. After provisioning all messages are signed using JWS. The message content can be encrypted using JWE. The preferred encryption method for keys and session is elliptic curve cryptography. 
+Each WoST Thing MUST have an asymmetric private and public key for use in TLS connections. The preferred encryption key is EC P-256, an elliptic curve key format which the device generates on first use. During the provisioning process the public key is sent by the device to the provisioning server via a TLS encrypted endpoint. The provisioning server provides a client certificate after verification of the out of band secret along with a list of endpoints that support this certificate.
 
-The WoST Hub keeps a list of provisioned Things and their public key. Messages from the Thing are only accepted when signed with JWS (unless they are provisioned in test mode).
+The WoST Hub verifies incoming connection with the CA that signed the client certificate. Thing devices can only connect with a valid client certificate. The certificate CN name is the device ID. This approach both ensures encryption and verifies authentication of the Thing device.
+
+The provisioning process is described in detail in the [idprov standard](https://github.com/wostzone/idprov-standard) [10].
 
 
 
@@ -161,3 +165,5 @@ The WoST Hub keeps a list of provisioned Things and their public key. Messages f
 [8] [OCF Security Specifications](https://www.w3.org/TR/wot-security/#bib-ocf17)
 
 [9] [WoT Directory Service]((https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory-api-registration))
+
+[10] [IDProv standard](https://github.com/wostzone/idprov-standard)
