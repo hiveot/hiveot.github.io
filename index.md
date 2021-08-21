@@ -6,18 +6,53 @@ It aims to be WoT compliant while providing restrictions to establish a secured 
 
 ## Status & Roadmap
 
-This project is currently in the proof of concept phase. 
+This project is in early development
 
-Planned project deliverables, subject to change no doubt:
-1. Conceptual design and attempt to engage with the WoT working group [poc]
-2. WoST Hub core [alpha]
-2. WoST client library [alpha]
-3. WoST Hub core plugin for Thing provisioning (idprov) [alpha]
-4. WoST Hub core plugin for authorization [alpha]
-4. WoST Hub Plugin for viewing and managing Things through a Web UI
-5. WoST Hub Plugin for legacy IoT devices; 1-wire, Insteon, Z-Wave [in-progress]
-6. WoST Hub Plugin for Directory Service
-7. WoST Hub Plugin for cloud intermediary
+
+**Core services** include services needed for regular operation of the Hub 
+
+| name | description | status
+|------|-------------|--------
+| hub | Launcher and watchdog for hub plugins | <span style="color:orange">Working Alpha</span>
+| hubauth | Centralized authentication and group role authorization to access Things | <span style="color:orange">Working Alpha</span>
+| mosquittomgr | Manage the MQTT message bus using mosquitto | <span style="color:orange">Working Alpha</span>
+| idprov-pb | Device provisioning service, providing client certificates and discovery for IoT devices | <span style="color:orange">Working Alpha</span>
+| thingdir | Directory Service for registration and querying of Things | <span style="color:orange">Working Alpha</span>
+| logger | Message logging for testing and troubleshooting | <span style="color:orange">Working Alpha</span>
+| portal | Framework and widgets for configuration and interacting with things in a user interface | <span style="color:red">Todo</span>
+
+**Protocol Adapters**
+
+Protocol adapters provide integration with existing IoT protocols.
+
+| name | description | status
+|-------|-------------|--------
+| owserver-pb | 1-wire protocol adapter for 1-wire OWServer-V2 gateway | <span style="color:orange">Working Alpha</span>
+| isy99    | Insteon protocol adapter using isy99 gateway | <span style="color:red">todo</span>
+| ipcam    | Publish IP Camera images | <span style="color:red">todo</span>
+| weather  | Weather service protocol adapter | <span style="color:red">todo</span>
+| zwave-pb | ZWave protocol adapter | <span style="color:red">todo</span>
+| coap    | CoAP Protocol adapters for CoAP devices on the local network | <span style="color:red">todo</span>
+| loragw | LoRa Protocol adapters for LoRa gateway | <span style="color:red">todo</span>
+| philipshue | Philips Hue protocol adapter |  <span style="color:red">todo</span>
+| notify   | Notification protocol binding to send/receive notifications via email, text, twitter, ... | <span style="color:red">todo</span>
+| bridge | Intermediary of select things to another hub, eg internet access | <span style="color:red">Todo</span>
+
+
+**Enrichment Services**
+
+Services provide value add services.
+
+| name | description | status
+|-------|-------------|--------
+| ipnet    | Monitor the network and track changes | <span style="color:red">todo</span>
+| monit    | Monitor the status of computer | <span style="color:red">todo</span>
+| locator   | Location tracking of people and equipment |  <span style="color:red">todo</span>
+| energy   | Energy management analysis and reporting |  <span style="color:red">todo</span>
+| automate | Rule based automation  | <span style="color:red">todo</span>
+
+
+
 
 
 
