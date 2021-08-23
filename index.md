@@ -26,7 +26,7 @@ In the above diagram WoST Things and consumers connect to the hub which acts as 
 All application interaction with WoST Things and legacy devices take place via the hub. Access over the internet is provided via a cloud intermediary, which can be another WoST hub run by a cloud service provider. 
 
 
-## A Server On Every Device
+## Why Not A Server On Every Device
 
 With billions of IoT devices being used, and this number growing fast, the [WoT](https://www.w3.org/TR/?title=web%20of%20things) provides standards to support interoperability between IoT devices and its consumers. It addresses one of the biggest problems in IoT today.
 
@@ -54,28 +54,28 @@ WoST's paradigm is: 'Things Are Not Servers'. Securing servers is too difficult 
 
 WoST compliant 'Things' MUST adhere to simple but strict rules:
 <code>
-1. WoST Things MUST connect to their provisioned WoST Hub. The Hub will not connect to WoST Things.
+1. WoST Things MUST discover and connect to their provisioned WoST Hub. 
 
-2. WoST Things MUST NOT operate a server for the purpose of WoT after they are provisioned. It MUST NOT listen on any ports until it is unprovisioned by a factory reset.
+2. WoST Things MUST NOT operate a server once they are provisioned. 
    
    If the main purpose of the Thing is to be a server this functionality remains separate from the Thing functionality. Eg, a server is allowed for other purposes. For example, a web server can be monitored as a WoST Thing.
 
 3. WoST Things MUST NOT request firewall ports to be opened using UPnP or any other means, including written instructions.
 
-4. WoST Things MUST respect its user's privacy:
+4. WoST Things MUST respect its user's privacy
 
-   WOST Things are only allowed to connect to the Internet to accomplish their primary purpose unless explicitly documented and approved by the user. 
+  * WOST Things are only allowed to connect to the Internet to accomplish their primary purpose unless explicitly documented and approved by the user. 
 
-   WoST Thing providers can provide an Internet based service that a Thing connects to after the user accepts the terms and MUST clearly identify what data is send to the service and how often.
+  * WoST Thing providers can provide an Internet based service that a Thing connects to after the user accepts the terms and MUST clearly identify what data is send to the service and how often.
 
-   WoST Things should continue to operate without Internet connectivity for operations that are not dependent on an Internet connection.
+  * WoST Things should continue to operate without Internet connectivity for operations that are not dependent on an Internet connection.
 
-   For example, sending usage data from a Thing to an Internet provider is not allowed until the administrator is informed about what data is sent, how often, and gives its consent.
+  * For example, sending usage data from a Thing to an Internet provider is not allowed until the user is informed about what data is sent, how often, and gives its consent.
 </code>
 
 The above set of rules reduces the number of servers greatly as only WoST Hubs run a server. At the same time it improves privacy. WoST Thing manufacturers benefit as they don't have to be as stringent about security, and less memory and CPU are needed on Things as no server is needed. Simpler and cheaper, what is not to like.
 
-This raises an obvious question, how to connect to a Thing? The answer is that a consumer does not connect to a Thing. Instead, a consumer connects to the WoST Hub that a Thing is provisioned (paired) with. A Thing connects to its provisioned hub to send and receive messages while the connection is in place.
+This raises an obvious question, how to connect to a Thing? The answer is that a consumer does not connect to a Thing. Instead, a consumer connects to the WoST Hub that a Thing is provisioned (paired) with. A Thing only connects to its provisioned hub to send and receive messages.
 
 ## WoST Hub
 
@@ -92,18 +92,18 @@ The burden of proper security lies therefore with the Hub. Hub providers must be
 This project is in early development
 
 
-**Core services** include services needed for regular operation of the Hub 
+**Core services** are services needed for regular operation of the Hub 
 
 | name | description | status
 |------|-------------|--------
-| hub | Launcher and watchdog for hub plugins | <span style="color:orange">Working Alpha</span>
+| hub | Launcher for hub plugins | <span style="color:orange">Working Alpha</span>
 | hubauth | Centralized authentication and group role authorization to access Things | <span style="color:orange">Working Alpha</span>
 | mosquittomgr | Manage the MQTT message bus using mosquitto | <span style="color:orange">Working Alpha</span>
 | idprov-pb | Device provisioning service, providing client certificates and discovery for IoT devices | <span style="color:orange">Working Alpha</span>
 | thingdir | Directory Service for registration and querying of Things | <span style="color:orange">Working Alpha</span>
 | logger | Message logging for testing and troubleshooting | <span style="color:orange">Working Alpha</span>
 | hubportal | Framework and widgets for configuration and interacting with things in a user interface | <span style="color:red">Todo</span>
-| hubbridge | Intermediary of select things to another hub, eg internet access | <span style="color:red">Todo</span>
+| hubbridge | Bridge select things to another hub, enabling internet access for select things | <span style="color:red">Todo</span>
 | hubscript | Scripting engine to run user scripts for automation | <span style="color:red">Todo</span>
 
 **Protocol Bindings**
@@ -115,8 +115,7 @@ Protocol bindings provide integration with existing IoT protocols.
 | owserver-pb | 1-wire protocol adapter for 1-wire OWServer-V2 gateway | <span style="color:orange">Working Alpha</span>
 | isy99-pb    | Insteon protocol adapter using isy99 gateway | <span style="color:red">todo</span>
 | zwave-pb | ZWave protocol adapter | <span style="color:red">todo</span>
-| ipcam    | Publish IP Camera images | <span style="color:red">todo</span>
-| weather  | Weather service protocol adapter | <span style="color:red">todo</span>
+| ipcam-pb   | Publish IP Camera images | <span style="color:red">todo</span>
 | coap-pb | CoAP Protocol binding for CoAP devices on the local network | <span style="color:red">todo</span>
 | lora-pb | LoRa Protocol binding for LoRa gateway | <span style="color:red">todo</span>
 | phue-pb | Philips Hue protocol adapter |  <span style="color:red">todo</span>
@@ -129,11 +128,12 @@ Services provide value add services.
 
 | name | description | status
 |-------|-------------|--------
-| ipnet    | Monitor the network and track changes | <span style="color:red">todo</span>
+| ipnet-pb    | Monitor the network and track changes | <span style="color:red">todo</span>
 | monit    | Monitor the status of computer | <span style="color:red">todo</span>
 | locator   | Location tracking of people and equipment |  <span style="color:red">todo</span>
 | energy   | Energy management analysis and reporting |  <span style="color:red">todo</span>
 | automate | Rule based automation  | <span style="color:red">todo</span>
+| weather | Publish current weather from a weather service | <span style="color:red">todo</span>
 
 
 
@@ -159,9 +159,9 @@ In addition to being WoT compliant, WoST compliant Hubs MUST adhere to the follo
 
 ## WoST Hub Discovery and Provisioning
 
-Discovery is a pre-curser to the provisioning step. WoST Hubs can be discovered by WoST Things and consumers manuall or through mDNS.
+Discovery is a pre-curser to the provisioning step. WoST Hubs can be discovered by WoST Things manually or through mDNS.
 
-The provisioning server publishes a DNS-SD based discovery record for discovery on the local network. The provisioning server provides a directory of services that are available.
+The provisioning service publishes a DNS-SD record for discovery on the local network. The provisioning server provides a directory of services that are available.
 
 ### DNS-SD
 A WoST Hub MAY implement a [DNS-Based Service Discovery](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#introduction-dns-sd). Things and Thing consumers can use this to discover the hub on a local network. 
@@ -179,7 +179,7 @@ Provisioning is the process of setting up a trusted relationship between the dev
 
 Each WoST Thing MUST have an asymmetric private and public key for use in TLS connections. The preferred encryption key is EC P-256, an elliptic curve key format which the device generates on first use. During the provisioning process the public key is sent by the device to the provisioning server via a TLS encrypted endpoint. The provisioning server provides a client certificate after verification of the out of band secret along with a list of endpoints that support this certificate.
 
-The WoST Hub verifies incoming connection with the CA that signed the client certificate. Thing devices can only connect with a valid client certificate. The certificate CN name is the device ID. This approach both ensures encryption and verifies authentication of the Thing device.
+WoST Hub services verify incoming connections using the CA that signed the client certificate. Thing devices can only connect with a valid client certificate. The certificate CN name is the device ID. This approach both ensures encryption and verifies authentication of the Thing device.
 
 The provisioning process is described in detail in the [idprov standard](https://github.com/wostzone/idprov-standard) [10].
 
