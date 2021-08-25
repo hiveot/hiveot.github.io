@@ -102,7 +102,7 @@ This project is in early development
 | idprov-pb | Device provisioning service, providing client certificates and discovery for IoT devices | <span style="color:orange">Working Alpha</span>
 | thingdir | Directory Service for registration and querying of Things | <span style="color:orange">Working Alpha</span>
 | logger | Message logging for testing and troubleshooting | <span style="color:orange">Working Alpha</span>
-| hubportal | Framework and widgets for configuration and interacting with things in a user interface | <span style="color:red">Todo</span>
+| hubview | Framework and widgets for viewing and interacting with things in a user interface | <span style="color:red">In progress</span>
 | hubbridge | Bridge select things to another hub, enabling internet access for select things | <span style="color:red">Todo</span>
 | hubscript | Scripting engine to run user scripts for automation | <span style="color:red">Todo</span>
 
@@ -126,13 +126,13 @@ Protocol bindings provide integration with existing IoT protocols.
 
 Services provide value add services.
 
-| name | description | status
-|-------|-------------|--------
-| ipnet-pb    | Monitor the network and track changes | <span style="color:red">todo</span>
-| monit    | Monitor the status of computer | <span style="color:red">todo</span>
-| locator   | Location tracking of people and equipment |  <span style="color:red">todo</span>
-| energy   | Energy management analysis and reporting |  <span style="color:red">todo</span>
-| automate | Rule based automation  | <span style="color:red">todo</span>
+| name    | description | status
+|---------|-------------|--------
+| ipnet   | Monitor the network and track changes | <span style="color:red">todo</span>
+| monit   | Monitor the status of computer | <span style="color:red">todo</span>
+| locator | Location tracking of people and equipment |  <span style="color:red">todo</span>
+| energy  | Energy management analysis and reporting |  <span style="color:red">todo</span>
+| automate| Rule based automation | <span style="color:red">todo</span>
 | weather | Publish current weather from a weather service | <span style="color:red">todo</span>
 
 
