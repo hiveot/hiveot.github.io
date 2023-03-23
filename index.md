@@ -1,10 +1,8 @@
-# WoST Zone - Web Of WoST Things - DRAFT
+# Hive Of Things - DRAFT
 
-WoST is a language agnostic implementation of Web Of Things (WOT) with a focus on security, based on the 'Things Are NOT Servers' paradigm.
+HiveOT is a language agnostic implementation of Web Of Things (WoT) with a focus on security, based on the 'Things Are NOT Servers' paradigm.
 
 It aims to be WoT compliant while providing restrictions to establish a secured implementation of the WoT architecture.
-
-
 
 
 ## Objectives
@@ -13,17 +11,17 @@ The primary objective of this project is the creation of a secure approach to th
 
 ## Overview
 
-WoST improves security in WoT simply by not allowing Things to expose a server, except when its purpose is to be a server. It aims to be WoT compliant except where this objective would be compromised.
+HiveOT improves security in WoT by not allowing Things to expose a network server, except when its purpose is to be a server. It aims to be WoT compliant except where this objective would be compromised.
 
-It is the intent that 'WoST' compliancy will become a must have for the security minded consumer when purchasing IoT devices.
+It is the intent that 'HiveOT' compliancy will become a must have for the security minded consumer when purchasing IoT devices.
 
-This approach requires the use of a hub to act on behalf of WoST Things. Rather than configuring each Thing, the configuration facility on the hub will let users manage the configuration. This hub-and-spokes approach is already quite common for existing IoT devices such as ZWave and Zigbee and does not seem to be a hindrance to adoption.
+This approach requires the use of a 'Hub' to act on behalf of Things. Rather than configuring each Thing individually, the Hub will let users manage the configuration. This hub-and-spokes approach is already quite common for existing IoT devices such as ZWave and Zigbee and does not seem to be a hindrance to adoption.
 
-![](wost-overview.png)
+![](design/hiveot-design.png)
 
-In the above diagram WoST Things and consumers connect to the hub which acts as a proxy for all Things. Data can flow back to the connecting devices. Hub plugins convert access to legacy devices as if they are  WoST Things.
+In the above diagram Things and consumers connect to the Hub which acts as a proxy for all Things. Data can flow back to the connecting devices. Hub plugins convert access to legacy devices as if they are HiveOT compliant Things.
 
-All application interaction with WoST Things and legacy devices take place via the hub. Access over the internet is provided via a cloud intermediary, which can be another WoST hub run by a cloud service provider. 
+All application interaction with Things and legacy devices take place via the Hub. Access over the internet can be provided via a cloud intermediary, which can be another HiveOT Hub run by a cloud service provider. 
 
 
 ## Why Not A Server On Every Device
@@ -46,143 +44,88 @@ As if these aren't enough risks, a lot of so-called smart devices today use UPnP
 
 The fact is that the moment you allow Internet access to a 'Thing', the convenience factor wins and you have lost control of the situation. Warnings that the situation is dire make the news regularly but there is little heed paid to these warnings. Many manufacturers, including (apparently) the WoT working group still see nothing wrong with running servers on IoT devices or do not actively work to discourage this as a viable option.
 
-WoT security goal is that quote: ["devices should not be used in any form of attack"](https://www.w3.org/TR/wot-security/#wot-threat-model). However the architecture itself stays silent on how to achieve this. WoST argues that the WoT  should provide clear guidance in its architecture on securing Things so they can not be used in any form of attack, and bear responsibility for security vulnerabilities of said architecture. The challenge will be to appease its many masters when adding constraints to the architecture to elimitate security risks.
+WoT security goal is that, quote: ["devices should not be used in any form of attack"](https://www.w3.org/TR/wot-security/#wot-threat-model). However the architecture itself stays silent on how to achieve this. HiveOT argues that the WoT should provide clear guidance in its architecture on securing Things so they can not be used in any form of attack, and bear responsibility for security vulnerabilities of said architecture. The challenge will be to appease its many masters when adding constraints to the architecture to elimitate security risks.
 
-## The Security First Approach In WOST
+## The Security First Approach In HiveOT
 
-WoST's paradigm is: 'Things Are Not Servers'. Securing servers is too difficult to expect all Thing manufacturers to do so dilligently. WoST requires that after provisioning a Thing MUST NOT act as a server, unless its purpose is to be a server. Note that this leaves the door open to run an insecure server just to provision the Thing.
+HiveOT's paradigm is: 'Things Are Not Servers'. Securing and maintaining secure servers is too ~~difficult~~ costly to expect all Thing manufacturers to do so dilligently. HiveOT requires that after provisioning a Thing MUST NOT serve any network connections, unless its purpose is to be a server. Note that this allows running an insecure server to provision the Thing before use.
 
-WoST compliant 'Things' MUST adhere to simple but strict rules:
+HiveOT compliant 'Things' MUST adhere to simple but strict rules:
 <code>
-1. WoST Things MUST discover and connect to their provisioned WoST Hub. 
+1. Things MUST discover and connect to their provisioned HiveOT Hub. 
 
-2. WoST Things MUST NOT operate a server once they are provisioned. 
-   
-   If the main purpose of the Thing is to be a server this functionality remains separate from the Thing functionality. Eg, a server is allowed for other purposes. For example, a web server can be monitored as a WoST Thing.
+2. Things MUST NOT operate a listening server once they are provisioned. 
 
-3. WoST Things MUST NOT request firewall ports to be opened using UPnP or any other means, including written instructions.
+   If the main purpose of the Thing is to be a server this functionality remains separate from the Thing functionality. Eg, a server is allowed for other purposes. For example, a web server can be monitored as a Thing.
 
-4. WoST Things MUST respect its user's privacy
+3. Things MUST NOT request firewall ports to be opened using UPnP or any other means, including written instructions.
 
-  * WOST Things are only allowed to connect to the Internet to accomplish their primary purpose unless explicitly documented and approved by the user. 
+4. Things MUST respect its user's privacy:
 
-  * WoST Thing providers can provide an Internet based service that a Thing connects to after the user accepts the terms and MUST clearly identify what data is send to the service and how often.
+  * Things are only allowed to connect to the Internet to accomplish their primary purpose unless explicitly documented and approved by the user. 
 
-  * WoST Things should continue to operate without Internet connectivity for operations that are not dependent on an Internet connection.
+  * Thing providers can provide an Internet based service that a Thing connects to after the user accepts the terms and MUST clearly identify what data is send to the service and how often.
+
+  * Things should continue to operate without Internet connectivity for operations that are not dependent on an Internet connection.
 
   * For example, sending usage data from a Thing to an Internet provider is not allowed until the user is informed about what data is sent, how often, and gives its consent.
 </code>
 
-The above set of rules reduces the number of servers greatly as only WoST Hubs run a server. At the same time it improves privacy. WoST Thing manufacturers benefit as they don't have to be as stringent about security, and less memory and CPU are needed on Things as no server is needed. Simpler and cheaper, what is not to like.
+The above set of rules reduces the number of servers greatly as only HiveOT compliant Hubs run a server. At the same time it improves privacy. Thing manufacturers also benefit as they don't have to be as stringent about security; authentication and authorization is handled by the Hub; no web server is running, and less memory and CPU are needed. Simpler and cheaper, what is not to like.
 
-This raises an obvious question, how to connect to a Thing? The answer is that a consumer does not connect to a Thing. Instead, a consumer connects to the WoST Hub that a Thing is provisioned (paired) with. A Thing only connects to its provisioned hub to send and receive messages.
+This raises an obvious question, how to connect to a Thing? The answer is that a consumer does not connect to a Thing. Instead, a consumer connects to the HiveOT compliant Hub that a Thing is provisioned (paired) with. A Thing only connects to its provisioned Hub to send and receive messages.
 
-## WoST Hub
+## HiveOT Hub
 
-![](hub-overview.png)
+![](design/hiveot-design.png)
 
-The primary purpose of a 'WoST Hub', or simply 'Hub', is to act as an intermediary for WoST Things. The Hub supports provisioning of Things, serves Thing TD's and relays actions and events that are defined in the TD. In addition the Hub can relay messages to cloud based intermediaries so that no direct LAN access is needed to view and control WoST Things from the Internet.
+The primary purpose of a 'HiveOT compliant Hub', or simply 'Hub', is to act as an intermediary for Things. The Hub supports provisioning of Things, serves Thing TD's and relays actions and events that are defined in the TD. In addition the Hub can relay messages to cloud based intermediaries so that no direct LAN access is needed to view and control Things from the Internet.
 
-Hubs can be extended with plugins to also act as a hub for 3rd party IoT devices such as ZWave and one-wire, and for services such as a mDNS discovery, directory service and web server for user interaction. 
+Hubs can be extended with plugins to also act as a hub for 3rd party IoT devices such as ZWave and one-wire, and for services such as mDNS discovery, directory service and web server for user interaction. 
 
 The burden of proper security lies therefore with the Hub. Hub providers must be committed to ensure their hubs are up to date with security patches, similar to Windows, Android devices or iPhones. While the risk doesn't disappear it is much more managable than requiring this for every single Thing itself.
 
-### Hub Status & Roadmap
+## HiveOT Compliance
 
-This project is in early development
-
-
-**Core services** are services needed for regular operation of the Hub 
-
-| name | description | status
-|------|-------------|--------
-| hub | Launcher for hub plugins | <span style="color:orange">Working Alpha</span>
-| hubauth | Centralized authentication and group role authorization to access Things | <span style="color:orange">Working Alpha</span>
-| mosquittomgr | Manage the MQTT message bus using mosquitto | <span style="color:orange">Working Alpha</span>
-| idprov-pb | Device provisioning service, providing client certificates and discovery for IoT devices | <span style="color:orange">Working Alpha</span>
-| thingdir | Directory Service for registration and querying of Things | <span style="color:orange">Working Alpha</span>
-| logger | Message logging for testing and troubleshooting | <span style="color:orange">Working Alpha</span>
-| hubview | Framework and widgets for viewing and interacting with things in a user interface | <span style="color:red">In progress</span>
-| hubbridge | Bridge select things to another hub, enabling internet access for select things | <span style="color:red">Todo</span>
-| hubscript | Scripting engine to run user scripts for automation | <span style="color:red">Todo</span>
-
-**Protocol Bindings**
-
-Protocol bindings provide integration with existing IoT protocols.
-
-| name | description | status
-|-------|-------------|--------
-| owserver-pb | 1-wire protocol adapter for 1-wire OWServer-V2 gateway | <span style="color:orange">Working Alpha</span>
-| isy99-pb    | Insteon protocol adapter using isy99 gateway | <span style="color:red">todo</span>
-| zwave-pb | ZWave protocol adapter | <span style="color:red">todo</span>
-| ipcam-pb   | Publish IP Camera images | <span style="color:red">todo</span>
-| coap-pb | CoAP Protocol binding for CoAP devices on the local network | <span style="color:red">todo</span>
-| lora-pb | LoRa Protocol binding for LoRa gateway | <span style="color:red">todo</span>
-| phue-pb | Philips Hue protocol adapter |  <span style="color:red">todo</span>
-| notify-pb   | Notification protocol binding to send/receive notifications via email, text, twitter, ... | <span style="color:red">todo</span>
-
-
-**Enrichment Services**
-
-Services provide value add services.
-
-| name    | description | status
-|---------|-------------|--------
-| ipnet   | Monitor the network and track changes | <span style="color:red">todo</span>
-| monit   | Monitor the status of computer | <span style="color:red">todo</span>
-| locator | Location tracking of people and equipment |  <span style="color:red">todo</span>
-| energy  | Energy management analysis and reporting |  <span style="color:red">todo</span>
-| automate| Rule based automation | <span style="color:red">todo</span>
-| weather | Publish current weather from a weather service | <span style="color:red">todo</span>
-
-
-
-## WoST Compliance
-
-In addition to being WoT compliant, WoST compliant Hubs MUST adhere to the following rules:
+In addition to being WoT compliant, HiveOT compliant Hubs MUST adhere to the following rules:
 <code>
-1. WoST Hubs MUST support provisioning of WoST Things. Rather obvious, but it is required.
+1. Hubs MUST support provisioning of Things. Rather obvious, but it is required.
 
-2. WoST Hubs MUST relay events and actions between Things and their consumers as described in the TD.
+2. Hubs MUST relay events and actions that are described in a Thing's TD between Things and their consumers.
 
-3. WoST Hubs MUST have the ability for [post-manufacturing updates of itself, its scripts and its plugins](https://www.w3.org/TR/wot-architecture/#sec-security-consideration-update-provisioning). The authenticity of security updates MUST be verified before they are applied.
+3. Hubs MUST have the ability for [post-manufacturing updates of itself, its scripts and its plugins](https://www.w3.org/TR/wot-architecture/#sec-security-consideration-update-provisioning). The authenticity of security updates MUST be verified before they are applied.
 
 4. Commercial Hub Manufacturers MUST make security patches available for the duration of the support period of the Hub. The security update interval for minor to intermediate vulnerabilities MUST be 6 months or less. After being notified of a severe vulnerability, a security patch MUST be made available within one month of notification. (TODO, adhere to common definitions of minor, intermediate and severe vulnerabilities)
 
    Support for automatic updates of the firmware with security patches from a trusted source is STRONGLY recommended where possible. It MUST have the ability to disable automatic updates and use manual updates. 
 
-5. WoST Hubs CAN implement a provisioning service that provisions the Thing device with discovery of WoST Hub endpoints. DNS-SD can be used for discovery of the provisioning server.
+5. Hubs CAN implement a provisioning service that provisions the Thing device with discovery of Hub endpoints. DNS-SD can be used for discovery of the provisioning server.
 
-6. WoST Hubs CAN be configured to act as an intermediary and push selected Exposed Things to another Hub or intermediary. 
+6. Hubs CAN be configured to act as an intermediary and push selected Exposed Things to another Hub or intermediary. 
 
 </code>
 
-## WoST Hub Discovery and Provisioning
+## Hub Discovery and Provisioning
 
-Discovery is a pre-curser to the provisioning step. WoST Hubs can be discovered by WoST Things manually or through mDNS.
+Discovery is a pre-curser to the provisioning step. HiveOT compliant Hubs can be discovered by Things manually or through DNS-SD.
 
 The provisioning service publishes a DNS-SD record for discovery on the local network. The provisioning server provides a directory of services that are available.
 
 ### DNS-SD
-A WoST Hub MAY implement a [DNS-Based Service Discovery](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#introduction-dns-sd). Things and Thing consumers can use this to discover the hub on a local network. 
+A Hub MAY implement a [DNS-Based Service Discovery](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#introduction-dns-sd). Things and Thing consumers can use this to discover the hub gateway on a local network. 
 
-The provisioning service name of the WoST Hub follows the WoT Service Discovery naming. Tenatively "_idprov._tcp" with a TXT record containing the directory path. The default TXT record is: "path=/idprov/directory".
-
-### Manual Discovery
-
-WoST Things that do not support mDNS but do have a configuration file or utility, can be linked to the hub using the WoST Hub hostname or IP address.
+The Hub service name of the Hub follows the WoT Service Discovery naming. Tenatively "_hiveot._tcp" with a TXT record containing an alternative websocket port and path. The default TXT record is: "path=/ws; wss=9884".
 
 
 ### Thing Provisioning
 
-Provisioning is the process of setting up a trusted relationship between the device that hosts the Thing and the WoST Hub. The process is initiated by a Thing device when it is unprovisioned and a hub is discovered. One of the methods described in the [OCF Security Specification](https://www.w3.org/TR/wot-security/#bib-ocf17) is used. Things with the ability to present an out of band secret can be provisioned securely without a leap of faith in the provisioning process.
+Provisioning is the process of setting up a trusted relationship between the device that hosts the Thing and the Hub. The process is initiated by a Thing device when it is unprovisioned and a Hub is discovered. One of the methods described in the [OCF Security Specification](https://www.w3.org/TR/wot-security/#bib-ocf17) is used. Things with the ability to present an out of band secret can be provisioned securely without a leap of faith in the provisioning process.
 
-Each WoST Thing MUST have an asymmetric private and public key for use in TLS connections. The preferred encryption key is EC P-256, an elliptic curve key format which the device generates on first use. During the provisioning process the public key is sent by the device to the provisioning server via a TLS encrypted endpoint. The provisioning server provides a client certificate after verification of the out of band secret along with a list of endpoints that support this certificate.
+Each compatible Thing MUST have an asymmetric private and public key for use in TLS connections. The preferred encryption key is EC P-256, an elliptic curve key format which the device generates on first use. During the provisioning process the public key is sent by the device to the provisioning server via a TLS encrypted endpoint. The provisioning server provides a client certificate after verification of the out-of-band secret along with a list of endpoints that support this certificate.
 
-WoST Hub services verify incoming connections using the CA that signed the client certificate. Thing devices can only connect with a valid client certificate. The certificate CN name is the device ID. This approach both ensures encryption and verifies authentication of the Thing device.
+Hub services verify incoming connections using the CA that signed the client certificate. Thing devices are required to connect to the Hub using a valid client certificate. The certificate CN name is the device ID. This approach both ensures encryption and verifies authentication of the Thing device.
 
-The provisioning process is described in detail in the [idprov standard](https://github.com/wostzone/idprov-standard) [10].
-
+The provisioning process is described in detail in the [idprov standard](https://github.com/hiveot/design/idprov-standard) [10].
 
 
 # References
@@ -204,4 +147,5 @@ The provisioning process is described in detail in the [idprov standard](https:/
 
 [9] [WoT Directory Service]((https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory-api-registration))
 
-[10] [IDProv standard](https://github.com/wostzone/idprov-standard)
+[10] [IDProv standard](https://github.com/hiveot/design/idprov-standard)
+
