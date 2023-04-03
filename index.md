@@ -17,7 +17,7 @@ It is the intent that 'HiveOT' compliancy will become a must have for the securi
 
 This approach requires the use of a 'Hub' to act on behalf of Things. Rather than configuring each Thing individually, the Hub will let users manage the configuration. This hub-and-spokes approach is already quite common for existing IoT devices such as ZWave and Zigbee and does not seem to be a hindrance to adoption.
 
-![](design/hiveot-design.png)
+![](hiveot-overview.png)
 
 In the above diagram Things and consumers connect to the Hub which acts as a proxy for all Things. Data can flow back to the connecting devices. Hub plugins convert access to legacy devices as if they are HiveOT compliant Things.
 
@@ -77,7 +77,7 @@ This raises an obvious question, how to connect to a Thing? The answer is that a
 
 ## HiveOT Hub
 
-![](design/hiveot-design.png)
+![](hiveot-overview.png)
 
 The primary purpose of a 'HiveOT compliant Hub', or simply 'Hub', is to act as an intermediary for Things. The Hub supports provisioning of Things, serves Thing TD's and relays actions and events that are defined in the TD. In addition the Hub can relay messages to cloud based intermediaries so that no direct LAN access is needed to view and control Things from the Internet.
 
@@ -145,7 +145,7 @@ The provisioning process is described in detail in the [idprov standard](https:/
 
 [8] [OCF Security Specifications](https://www.w3.org/TR/wot-security/#bib-ocf17)
 
-[9] [WoT Directory Service]((https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory-api-registration))
+[9] [WoT Directory Service](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#exploration-directory-api-registration)
 
-[10] [IDProv standard](https://github.com/hiveot/design/idprov-standard)
+[10] [IDProv standard](https://github.com/hiveot/idprov-standard)
 
