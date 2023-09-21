@@ -11,7 +11,7 @@ The primary objective of this project is the creation of a secure approach to th
 
 ## Overview
 
-HiveOT improves security in WoT by not allowing Things to expose a network server, except when its purpose is to be a server. It aims to be WoT compliant except where this objective would be compromised.
+HiveOT provides a secure solution of the WoT standard by not allowing Things to expose a network server, except when its purpose is to be a server. It aims to be WoT compliant except where this objective would be compromised.
 
 It is the intent that 'HiveOT' compliancy will become a must have for the security minded consumer when purchasing IoT devices.
 
@@ -114,18 +114,16 @@ The provisioning service publishes a DNS-SD record for discovery on the local ne
 ### DNS-SD
 A Hub MAY implement a [DNS-Based Service Discovery](https://www.w3.org/TR/2020/WD-wot-discovery-20201124/#introduction-dns-sd). Things and Thing consumers can use this to discover the hub gateway on a local network. 
 
-The Hub service name of the Hub follows the WoT Service Discovery naming. Tenatively "_hiveot._tcp" with a TXT record containing an alternative websocket port and path. The default TXT record is: "path=/ws; wss=9884".
+The Hub service name follows the WoT Service Discovery naming. Tenatively "_hiveot._tcp" with a TXT record containing an alternative websocket port and path. The default TXT record is: "path=/ws; wss=9884".
 
 
 ### Thing Provisioning
 
 Provisioning is the process of setting up a trusted relationship between the device that hosts the Thing and the Hub. The process is initiated by a Thing device when it is unprovisioned and a Hub is discovered. One of the methods described in the [OCF Security Specification](https://www.w3.org/TR/wot-security/#bib-ocf17) is used. Things with the ability to present an out of band secret can be provisioned securely without a leap of faith in the provisioning process.
 
-Each compatible Thing MUST have an asymmetric private and public key for use in TLS connections. The preferred encryption key is EC P-256, an elliptic curve key format which the device generates on first use. During the provisioning process the public key is sent by the device to the provisioning server via a TLS encrypted endpoint. The provisioning server provides a client certificate after verification of the out-of-band secret along with a list of endpoints that support this certificate.
+The provisioning process provides the device with credentials in one of the supported formats. This can be a client certificate, signed by the Hub's CA, or a connection token.
 
-Hub services verify incoming connections using the CA that signed the client certificate. Thing devices are required to connect to the Hub using a valid client certificate. The certificate CN name is the device ID. This approach both ensures encryption and verifies authentication of the Thing device.
-
-The provisioning process is described in detail in the [idprov standard](https://github.com/hiveot/design/idprov-standard) [10].
+The certificate based provisioning process is described in detail in the [idprov standard](https://github.com/hiveot/design/idprov-standard) [10].
 
 
 # References
